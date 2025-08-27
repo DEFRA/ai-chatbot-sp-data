@@ -1,8 +1,8 @@
-# cdp-python-backend-template
+# ai-chatbot-sp-data
 
 This is work-in-progress. See [To Do List](./TODO.md)
 
-- [cdp-python-backend-template](#cdp-python-backend-template)
+- [ai-chatbot-sp-data](#ai-chatbot-sp-data)
   - [Requirements](#requirements)
     - [Python](#python)
     - [Linting and Formatting](#linting-and-formatting)
