@@ -4,7 +4,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class AppConfig(BaseSettings):
     model_config = SettingsConfigDict()
-    python_env: str | None = None
+    python_env: str = "development"
     host: str | None = None
     port: int | None = None
     log_config: str | None = None

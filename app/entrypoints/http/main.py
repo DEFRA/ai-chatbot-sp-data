@@ -37,7 +37,7 @@ app.include_router(example_router)
 
 def main() -> None:
     uvicorn.run(
-        "app.main:app",
+        "app.entrypoints.http.main:app",
         host=config.host,
         port=config.port,
         log_config=config.log_config,
