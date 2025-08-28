@@ -28,7 +28,7 @@ dev = [
 ]
 
 [project.scripts]
-ai-chatbot-sp-data = "app.entrypoints.http.main:main"
+ai-chatbot-sp-data = "app.entrypoints.fastapi:main"
 
 [build-system]
 requires = ["hatchling"]

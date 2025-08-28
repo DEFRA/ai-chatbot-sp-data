@@ -36,7 +36,7 @@ ARG PORT_DEBUG=8086
 ENV PORT=${PORT}
 EXPOSE ${PORT} ${PORT_DEBUG}
 
-CMD [ "-m", "app.entrypoints.http.main" ]
+ENTRYPOINT [ "python", "-m", "app.entrypoints.fastapi" ]
 
 FROM defradigital/python:${PARENT_VERSION} AS production
 
