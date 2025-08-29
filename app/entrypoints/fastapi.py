@@ -8,6 +8,7 @@ from app.common.mongo import get_mongo_client
 from app.common.tracing import TraceIdMiddleware
 from app.config import config
 from app.health.router import router as health_router
+from app.knowledge.router import router as knowledge_router
 
 logger = getLogger(__name__)
 
@@ -17,7 +18,9 @@ async def lifespan(_: FastAPI):
     # Startup
     client = await get_mongo_client()
     logger.info("MongoDB client connected")
+
     yield
+
     # Shutdown
     if client:
         await client.close()
@@ -31,6 +34,7 @@ app.add_middleware(TraceIdMiddleware)
 
 # Setup Routes
 app.include_router(health_router)
+app.include_router(knowledge_router)
 
 
 def main() -> None:
