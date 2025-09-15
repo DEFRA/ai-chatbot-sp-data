@@ -2,9 +2,7 @@ from abc import ABC, abstractmethod
 from app.knowledge.management.models import (
     KnowledgeSource,
     KnowledgeGroup,
-    KnowledgeGroupAlreadyExists,
-    KnowledgeGroupNotFound,
-    KnowledgeSourceAlreadyExistsInGroup
+    KnowledgeGroupAlreadyExists
 )
 from bson.objectid import ObjectId
 from bson.datetime_ms import DatetimeMS

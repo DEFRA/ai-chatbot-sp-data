@@ -132,7 +132,7 @@ async def get_group(group_id: str, repository: MongoKnowledgeRepository = Depend
             owner=group.owner,
             created_at=group.created_at.isoformat(),
             updated_at=group.updated_at.isoformat(),
-            sources=group._sources
+            sources=group.sources
         )
     except KnowledgeGroupNotFound:
         raise HTTPException(status_code=404, detail=f"Knowledge group with ID '{group_id}' not found")
