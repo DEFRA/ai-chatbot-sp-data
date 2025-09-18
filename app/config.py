@@ -5,10 +5,11 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class MsGraphConfig(BaseSettings):
     model_config = SettingsConfigDict()
-    tenant_id: str = Field(..., alias="MS_GRAPH_TENANT_ID")
-    client_id: str = Field(..., alias="MS_GRAPH_CLIENT_ID")
-    client_secret: str = Field(..., alias="MS_GRAPH_CLIENT_SECRET")
-    scope: str = Field("https://graph.microsoft.com/.default", alias="MS_GRAPH_SCOPE")
+    graph_enabled: bool = Field(default=False, alias="MS_GRAPH_ENABLED")
+    tenant_id: str | None = Field(default=None, alias="MS_GRAPH_TENANT_ID")
+    client_id: str | None = Field(default=None, alias="MS_GRAPH_CLIENT_ID")
+    client_secret: str | None = Field(default=None, alias="MS_GRAPH_CLIENT_SECRET")
+    scope: str | None = Field(default="https://graph.microsoft.com/.default", alias="MS_GRAPH_SCOPE")
 
 
 class PostgresConfig(BaseSettings):
@@ -38,7 +39,7 @@ class AppConfig(BaseSettings):
     tracing_header: str = "x-cdp-request-id"
     ms_graph: MsGraphConfig = MsGraphConfig()
     postgres: PostgresConfig = PostgresConfig()
-    bedrock_embedding_model_id: str
+    bedrock_embedding_model_id: str | None = None
 
 
 config = AppConfig()

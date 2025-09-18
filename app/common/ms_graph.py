@@ -28,6 +28,10 @@ def create_graph_client(
     Returns:
         Configured GraphServiceClient instance
     """
+    if not config.ms_graph.graph_enabled:
+        raise ValueError("The MS Graph integration feature flag is disabled")
+
+
     credential = ClientSecretCredential(
         tenant_id=config.ms_graph.tenant_id,
         client_id=config.ms_graph.client_id,
