@@ -30,6 +30,12 @@ class AbstractKnowledgeGroupRepository(ABC):
         """Delete a knowledge group and all its sources"""
         pass
 
+class AbstractKnowledgeVectorRepository(ABC):
+    @abstractmethod
+    async def add(self, content: str, embedding: list[float]) -> None:
+        """Add a knowledge vector entry"""
+        pass
+
 
 class MongoKnowledgeGroupRepository(AbstractKnowledgeGroupRepository):
     def __init__(self, db: AsyncDatabase):

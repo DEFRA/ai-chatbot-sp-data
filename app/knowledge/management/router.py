@@ -3,7 +3,7 @@ from datetime import datetime
 from pymongo.asynchronous.database import AsyncDatabase
 
 from app.knowledge.management import service as knowledge_service
-from app.knowledge.management.repository import MongoKnowledgeRepository
+from app.knowledge.management.repository import AbstractKnowledgeGroupRepository, MongoKnowledgeGroupRepository
 from app.common.mongo import get_db
 
 from app.knowledge.management.request_schemas import (
@@ -21,13 +21,13 @@ from app.knowledge.management.models import (
 router = APIRouter(tags=["knowledge"])
 
 
-def get_knowledge_repository(db: AsyncDatabase = Depends(get_db)) -> MongoKnowledgeRepository:
-    """Dependency injection for MongoKnowledgeRepository."""
-    return MongoKnowledgeRepository(db)
+def get_knowledge_repository(db: AsyncDatabase = Depends(get_db)) -> MongoKnowledgeGroupRepository:
+    """Dependency injection for MongoKnowledgeGroupRepository."""
+    return MongoKnowledgeGroupRepository(db)
 
 
 @router.get("/knowledge/management/groups", status_code=status.HTTP_200_OK, response_model=list[KnowledgeGroupResponse])
-async def list_groups(repository: MongoKnowledgeRepository = Depends(get_knowledge_repository)):
+async def list_groups(repository: AbstractKnowledgeGroupRepository = Depends(get_knowledge_repository)):
     """
     List all knowledge groups.
 
@@ -55,7 +55,7 @@ async def list_groups(repository: MongoKnowledgeRepository = Depends(get_knowled
 
 
 @router.post("/knowledge/management/groups", status_code=status.HTTP_201_CREATED, response_model=KnowledgeGroupResponse)
-async def create_group(entry: CreateKnowledgeGroupRequest, repository: MongoKnowledgeRepository = Depends(get_knowledge_repository)):
+async def create_group(entry: CreateKnowledgeGroupRequest, repository: AbstractKnowledgeGroupRepository = Depends(get_knowledge_repository)):
     """
     Create a new knowledge group.
 
@@ -88,7 +88,7 @@ async def create_group(entry: CreateKnowledgeGroupRequest, repository: MongoKnow
 
 
 @router.patch("/knowledge/management/groups/{group_id}/sources", status_code=status.HTTP_200_OK)
-async def add_source_to_group(group_id: str, source: KnowledgeSource, repository: MongoKnowledgeRepository = Depends(get_knowledge_repository)):
+async def add_source_to_group(group_id: str, source: KnowledgeSource, repository: AbstractKnowledgeGroupRepository = Depends(get_knowledge_repository)):
     """
     Add a knowledge source to an existing knowledge group.
 
@@ -111,7 +111,7 @@ async def add_source_to_group(group_id: str, source: KnowledgeSource, repository
 
 
 @router.get("/knowledge/management/groups/{group_id}", response_model=KnowledgeGroupResponse)
-async def get_group(group_id: str, repository: MongoKnowledgeRepository = Depends(get_knowledge_repository)):
+async def get_group(group_id: str, repository: AbstractKnowledgeGroupRepository = Depends(get_knowledge_repository)):
     """
     Retrieve a knowledge group by its group ID.
 

@@ -1,12 +1,12 @@
 from app.knowledge.management.models import KnowledgeGroup, KnowledgeGroupNotFound
 
-from app.knowledge.management.repository import AbstractKnowledgeRepository
+from app.knowledge.management.repository import AbstractKnowledgeGroupRepository
 
 from logging import getLogger
 
 logger = getLogger(__name__)
 
-async def create_knowledge_group(repository: AbstractKnowledgeRepository, group: KnowledgeGroup) -> None:
+async def create_knowledge_group(repository: AbstractKnowledgeGroupRepository, group: KnowledgeGroup) -> None:
     """
     Create a new knowledge entry in the database.
     
@@ -24,7 +24,7 @@ async def create_knowledge_group(repository: AbstractKnowledgeRepository, group:
     logger.info(f"Knowledge entry created successfully: {group.name}")
 
 
-async def list_knowledge_groups(repository: AbstractKnowledgeRepository) -> list[KnowledgeGroup]:
+async def list_knowledge_groups(repository: AbstractKnowledgeGroupRepository) -> list[KnowledgeGroup]:
     """
     List all knowledge entries in the database.
     
@@ -39,7 +39,7 @@ async def list_knowledge_groups(repository: AbstractKnowledgeRepository) -> list
     return entries
 
 
-async def find_knowledge_group(repository: AbstractKnowledgeRepository, group_id: str) -> KnowledgeGroup:
+async def find_knowledge_group(repository: AbstractKnowledgeGroupRepository, group_id: str) -> KnowledgeGroup:
     """
     Find a knowledge entry by its group ID.
     

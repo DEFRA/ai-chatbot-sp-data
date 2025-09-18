@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import Field, HttpUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -9,7 +10,19 @@ class MsGraphConfig(BaseSettings):
     scope: str = Field("https://graph.microsoft.com/.default", alias="MS_GRAPH_SCOPE")
 
 
+class PostgresConfig(BaseSettings):
+    model_config = SettingsConfigDict()
+    host: str = Field(..., alias="POSTGRES_HOST")
+    port: int = Field(5432, alias="POSTGRES_PORT")
+    database: str = Field(default="ai_chatbot_sp_data", alias="POSTGRES_DB")
+    user: str = Field(default="ai_chatbot_sp_data", alias="POSTGRES_USER")
+    password: Optional[str] = Field(default=None, alias="POSTGRES_PASSWORD")
+    ssl_mode: str = Field(default="require", alias="POSTGRES_SSL_MODE")
+    rds_truststore: Optional[str] = Field(default=None, alias="TRUSTSTORE_RDS_ROOT_CA")
+
+
 class AppConfig(BaseSettings):
+    aws_region: str = Field(..., alias="AWS_REGION")
     model_config = SettingsConfigDict()
     python_env: str = "development"
     host: str | None = None
@@ -23,6 +36,8 @@ class AppConfig(BaseSettings):
     enable_metrics: bool = False
     tracing_header: str = "x-cdp-request-id"
     ms_graph: MsGraphConfig = MsGraphConfig()
+    postgres: PostgresConfig = PostgresConfig()
+    bedrock_embedding_model_id: str
 
 
 config = AppConfig()
