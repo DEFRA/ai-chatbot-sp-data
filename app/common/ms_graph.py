@@ -29,7 +29,8 @@ def create_graph_client(
         Configured GraphServiceClient instance
     """
     if not config.ms_graph.graph_enabled:
-        raise ValueError("The MS Graph integration feature flag is disabled")
+        msg = "The MS Graph integration feature flag is disabled"
+        raise ValueError(msg)
 
 
     credential = ClientSecretCredential(
