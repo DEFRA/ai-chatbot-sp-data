@@ -60,7 +60,7 @@ class MongoKnowledgeGroupRepository(AbstractKnowledgeGroupRepository):
                 {"$set": entry_data},
                 upsert=True
             )
-        except DuplicateKeyError as err:
+        except DuplicateKeyError:
             msg = f"Knowledge entry with group_id '{group.group_id}' already exists"
             raise KnowledgeGroupAlreadyExistsError(msg) from None
 

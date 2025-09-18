@@ -104,9 +104,9 @@ async def add_source_to_group(group_id: str, source: KnowledgeSource, repository
     """
     try:
         await repository.add_knowledge_source(group_id, source)
-    except KnowledgeGroupNotFoundError as err:
+    except KnowledgeGroupNotFoundError:
         raise HTTPException(status_code=404, detail=f"Knowledge group with ID '{group_id}' not found") from None
-    except KnowledgeSourceAlreadyExistsInGroupError as err:
+    except KnowledgeSourceAlreadyExistsInGroupError:
         raise HTTPException(status_code=409, detail=f"Knowledge source with name '{source.name}' already exists in group '{group_id}'") from None
 
     return {"message": f"Knowledge source '{source.name}' added to group '{group_id}' successfully"}
