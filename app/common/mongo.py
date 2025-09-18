@@ -44,10 +44,9 @@ async def get_db(client: AsyncMongoClient = Depends(get_mongo_client)) -> AsyncD
 
 
 async def check_connection(client: AsyncMongoClient):
-    database = await get_db(client)
+    database = client.get_database(config.mongo_database)
     response = await database.command("ping")
     logger.info("MongoDB PING %s", response)
-
 
 async def _ensure_indexes(db: AsyncDatabase) -> None:
     """ Ensure indexes are created on startup. """

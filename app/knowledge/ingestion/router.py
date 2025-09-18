@@ -1,7 +1,11 @@
 from fastapi import APIRouter, Depends, status
 
+from app.common.bedrock import (
+    AbstractEmbeddingService,
+    BedrockEmbeddingService,
+    get_bedrock_client,
+)
 from app.config import config
-from app.common.bedrock import AbstractEmbeddingService, BedrockEmbeddingService, get_bedrock_client
 from app.knowledge.ingestion import service as ingestion_service
 
 router = APIRouter(tags=["knowledge-ingestion"])

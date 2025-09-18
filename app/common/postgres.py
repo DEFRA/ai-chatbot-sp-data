@@ -1,11 +1,12 @@
+from logging import getLogger
+
 import boto3
+from sqlalchemy import URL, text
+from sqlalchemy.event import listen
+from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
 from app.common.tls import custom_ca_certs
 from app.config import config
-from logging import getLogger
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine
-from sqlalchemy import URL, text
-from sqlalchemy.event import listen
 
 logger = getLogger(__name__)
 
@@ -16,7 +17,7 @@ async def get_sql_engine() -> AsyncEngine:
 
     if engine is not None:
         return engine
-    
+
     url = URL.create(
         drivername="postgresql+psycopg",
         username=config.postgres.user,
@@ -53,7 +54,7 @@ async def check_connection(engine: AsyncEngine) -> bool:
         await connection.execute(text("SELECT 1 FROM knowledge_vectors"))
 
 
-def get_token(dialect, conn_rec, cargs, cparams):
+def get_token(dialect, conn_rec, cargs, cparams):  # noqa: ARG001
     if config.python_env == "development":
         cparams["password"] = config.postgres.password
     else:

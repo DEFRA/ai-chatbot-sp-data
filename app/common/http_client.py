@@ -28,10 +28,10 @@ def hook_request_tracing(request):
 def create_async_client(request_timeout: int = 30) -> httpx.AsyncClient:
     """
     Create an async HTTP client with configurable timeout.
-    
+
     Args:
         request_timeout: Request timeout in seconds
-        
+
     Returns:
         Configured httpx.AsyncClient instance
     """
@@ -39,21 +39,21 @@ def create_async_client(request_timeout: int = 30) -> httpx.AsyncClient:
         "timeout": request_timeout,
         "event_hooks": {"request": [async_hook_request_tracing]}
     }
-    
+
     if config.http_proxy:
-        logger.info(f"Using HTTP proxy: {config.http_proxy}")
+        logger.info("Using HTTP proxy: %s", config.http_proxy)
         client_kwargs["proxies"] = proxies
-        
+
     return httpx.AsyncClient(**client_kwargs)
 
 
 def create_client(request_timeout: int = 30) -> httpx.Client:
     """
     Create a sync HTTP client with configurable timeout.
-    
+
     Args:
         request_timeout: Request timeout in seconds
-        
+
     Returns:
         Configured httpx.Client instance
     """
@@ -61,10 +61,10 @@ def create_client(request_timeout: int = 30) -> httpx.Client:
         "timeout": request_timeout,
         "event_hooks": {"request": [hook_request_tracing]}
     }
-    
+
     if config.http_proxy:
-        logger.info(f"Using HTTP proxy: {config.http_proxy}")
+        logger.info("Using HTTP proxy: %s", config.http_proxy)
         client_kwargs["proxies"] = proxies
-        
+
     return httpx.Client(**client_kwargs)
 

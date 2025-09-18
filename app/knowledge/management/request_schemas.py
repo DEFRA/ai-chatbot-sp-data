@@ -1,5 +1,6 @@
+
 from pydantic import BaseModel, Field
-from typing import List, Optional
+
 
 class KnowledgeSource(BaseModel):
     """ Model for a knowledge source. """
@@ -11,11 +12,11 @@ class KnowledgeSource(BaseModel):
 
 class CreateKnowledgeGroupRequest(BaseModel):
     """ Request model for creating a knowledge group. """
-    
+
     name: str = Field(..., description="The name of the knowledge group", min_length=1, max_length=255)
     description: str = Field(..., description="A description of the knowledge group", min_length=1)
     owner: str = Field(..., description="The owner of the knowledge group", min_length=1, max_length=255)
-    sources: Optional[List[KnowledgeSource]] = Field(..., description="List of knowledge group sources", min_items=1)
+    sources: list[KnowledgeSource] | None = Field(..., description="List of knowledge group sources", min_items=1)
 
 
 class KnowledgeGroupResponse(BaseModel):

@@ -3,6 +3,7 @@ from datetime import date
 
 from app.common.id_utils import generate_random_id
 
+
 @dataclass(frozen=True)
 class KnowledgeSource:
     """ Represents the source of a knowledge entry. """
@@ -33,14 +34,17 @@ class KnowledgeGroup:
                  updated_at: date = None):
 
         if not name.strip():
-            raise ValueError("KnowledgeGroup name cannot be empty or whitespace.")
-    
+            msg = "KnowledgeGroup name cannot be empty or whitespace."
+            raise ValueError(msg)
+
         if not description.strip():
-            raise ValueError("KnowledgeGroup description cannot be empty or whitespace.")
-        
+            msg = "KnowledgeGroup description cannot be empty or whitespace."
+            raise ValueError(msg)
+
         if not owner.strip():
-            raise ValueError("KnowledgeGroup owner cannot be empty or whitespace.")
-        
+            msg = "KnowledgeGroup owner cannot be empty or whitespace."
+            raise ValueError(msg)
+
         self.group_id = group_id or generate_random_id("kg")
         self.name = name
         self.description = description
@@ -74,16 +78,13 @@ class KnowledgeGroup:
         return len(self._sources)
 
 
-class KnowledgeGroupAlreadyExists(Exception):
+class KnowledgeGroupAlreadyExistsError(Exception):
     """ Exception raised when a knowledge group (duplicate name) already exists. """
-    pass
 
 
-class KnowledgeGroupNotFound(Exception):
+class KnowledgeGroupNotFoundError(Exception):
     """ Exception raised when a knowledge group is not found. """
-    pass
 
-class KnowledgeSourceAlreadyExistsInGroup(Exception):
+class KnowledgeSourceAlreadyExistsInGroupError(Exception):
     """ Exception raised when a knowledge source already exists in a knowledge group. """
-    pass
 

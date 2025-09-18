@@ -2,7 +2,6 @@ from contextlib import asynccontextmanager
 from logging import getLogger
 
 import uvicorn
-
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
@@ -12,8 +11,8 @@ from app.common.postgres import get_sql_engine
 from app.common.tracing import TraceIdMiddleware
 from app.config import config
 from app.health.router import router as health_router
-from app.knowledge.management.router import router as knowledge_management_router
 from app.knowledge.ingestion.router import router as ingestion_router
+from app.knowledge.management.router import router as knowledge_management_router
 
 logger = getLogger(__name__)
 
@@ -42,7 +41,7 @@ async def lifespan(_: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 @app.exception_handler(RequestValidationError)
-async def validation_exception_handler(request, exc):
+async def validation_exception_handler(request, exc):  # noqa: ARG001
     return JSONResponse(
         status_code=400,
         content={"detail": exc.errors()},

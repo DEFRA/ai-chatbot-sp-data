@@ -1,21 +1,23 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Response
-from datetime import datetime
+from datetime import datetime, timezone
+
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from pymongo.asynchronous.database import AsyncDatabase
 
-from app.knowledge.management import service as knowledge_service
-from app.knowledge.management.repository import AbstractKnowledgeGroupRepository, MongoKnowledgeGroupRepository
 from app.common.mongo import get_db
-
-from app.knowledge.management.request_schemas import (
-    CreateKnowledgeGroupRequest,
-    KnowledgeGroupResponse
-)
-
+from app.knowledge.management import service as knowledge_service
 from app.knowledge.management.models import (
     KnowledgeGroup,
+    KnowledgeGroupNotFoundError,
     KnowledgeSource,
-    KnowledgeGroupNotFound,
-    KnowledgeSourceAlreadyExistsInGroup
+    KnowledgeSourceAlreadyExistsInGroupError,
+)
+from app.knowledge.management.repository import (
+    AbstractKnowledgeGroupRepository,
+    MongoKnowledgeGroupRepository,
+)
+from app.knowledge.management.request_schemas import (
+    CreateKnowledgeGroupRequest,
+    KnowledgeGroupResponse,
 )
 
 router = APIRouter(tags=["knowledge"])
@@ -33,7 +35,7 @@ async def list_groups(repository: AbstractKnowledgeGroupRepository = Depends(get
 
     Args:
         repository: Repository dependency injection
-        
+
     Returns:
         A list of knowledge group responses
     """
@@ -62,7 +64,7 @@ async def create_group(entry: CreateKnowledgeGroupRequest, repository: AbstractK
     Args:
         entry: The knowledge group request data
         repository: Repository dependency injection
-        
+
     Returns:
         Success message with the created group name
     """
@@ -70,11 +72,11 @@ async def create_group(entry: CreateKnowledgeGroupRequest, repository: AbstractK
         name=entry.name,
         description=entry.description,
         owner=entry.owner,
-        created_at=datetime.now(),
-        updated_at=datetime.now(),
+        created_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(timezone.utc),
         sources={KnowledgeSource(name=source.name, type=source.type, location=source.location) for source in entry.sources}
     )
-    
+
     await knowledge_service.create_knowledge_group(repository, knowledge_entry)
 
     return KnowledgeGroupResponse(
@@ -102,10 +104,10 @@ async def add_source_to_group(group_id: str, source: KnowledgeSource, repository
     """
     try:
         await repository.add_knowledge_source(group_id, source)
-    except KnowledgeGroupNotFound:
-        raise HTTPException(status_code=404, detail=f"Knowledge group with ID '{group_id}' not found")
-    except KnowledgeSourceAlreadyExistsInGroup:
-        raise HTTPException(status_code=409, detail=f"Knowledge source with name '{source.name}' already exists in group '{group_id}'")
+    except KnowledgeGroupNotFoundError as err:
+        raise HTTPException(status_code=404, detail=f"Knowledge group with ID '{group_id}' not found") from None
+    except KnowledgeSourceAlreadyExistsInGroupError as err:
+        raise HTTPException(status_code=409, detail=f"Knowledge source with name '{source.name}' already exists in group '{group_id}'") from None
 
     return {"message": f"Knowledge source '{source.name}' added to group '{group_id}' successfully"}
 
@@ -134,6 +136,6 @@ async def get_group(group_id: str, repository: AbstractKnowledgeGroupRepository 
             updated_at=group.updated_at.isoformat(),
             sources=group.sources
         )
-    except KnowledgeGroupNotFound:
-        raise HTTPException(status_code=404, detail=f"Knowledge group with ID '{group_id}' not found")
+    except KnowledgeGroupNotFoundError as err:
+        raise HTTPException(status_code=404, detail=f"Knowledge group with ID '{group_id}' not found") from err
 

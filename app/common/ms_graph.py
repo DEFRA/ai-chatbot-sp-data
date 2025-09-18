@@ -1,7 +1,9 @@
 from azure.identity.aio import ClientSecretCredential
 from httpx import AsyncClient
-from kiota_authentication_azure.azure_identity_authentication_provider import AzureIdentityAuthenticationProvider
-from msgraph import GraphServiceClient, GraphRequestAdapter
+from kiota_authentication_azure.azure_identity_authentication_provider import (
+    AzureIdentityAuthenticationProvider,
+)
+from msgraph import GraphRequestAdapter, GraphServiceClient
 from msgraph_core import GraphClientFactory
 
 from app.config import config
@@ -18,11 +20,11 @@ def create_graph_client(
     ) -> GraphServiceClient:
     """
     Create a Graph Service client with configurable timeouts.
-    
+
     Args:
         request_timeout_connect: Connection timeout in seconds
         scopes: Optional list of scopes for authentication
-        
+
     Returns:
         Configured GraphServiceClient instance
     """
@@ -32,12 +34,12 @@ def create_graph_client(
         client_secret=config.ms_graph.client_secret,
         proxies=proxies if config.http_proxy else None
     )
-    
+
     auth_provider = AzureIdentityAuthenticationProvider(
         credentials=credential,
         scopes=scopes or [config.ms_graph.scope]
     )
-    
+
     graph_client = GraphClientFactory.create_with_default_middleware(
         client=http_client
     )

@@ -1,40 +1,38 @@
 from abc import ABC, abstractmethod
-from app.knowledge.management.models import (
-    KnowledgeSource,
-    KnowledgeGroup,
-    KnowledgeGroupAlreadyExists
-)
-from bson.objectid import ObjectId
+
 from bson.datetime_ms import DatetimeMS
-from pymongo.asynchronous.database import AsyncDatabase, AsyncCollection
+from bson.objectid import ObjectId
+from pymongo.asynchronous.database import AsyncCollection, AsyncDatabase
 from pymongo.errors import DuplicateKeyError
+
+from app.knowledge.management.models import (
+    KnowledgeGroup,
+    KnowledgeGroupAlreadyExistsError,
+    KnowledgeSource,
+)
+
 
 class AbstractKnowledgeGroupRepository(ABC):
     @abstractmethod
     async def save(self, group: KnowledgeGroup) -> None:
         """Save a knowledge group with all its sources"""
-        pass
 
     @abstractmethod
     async def get_by_id(self, group_id: str) -> KnowledgeGroup | None:
         """Get a complete knowledge group with all its sources loaded"""
-        pass
 
     @abstractmethod
     async def list_all(self) -> list[KnowledgeGroup]:
         """List all knowledge groups with their sources loaded"""
-        pass
 
     @abstractmethod
     async def delete(self, group_id: str) -> None:
         """Delete a knowledge group and all its sources"""
-        pass
 
 class AbstractKnowledgeVectorRepository(ABC):
     @abstractmethod
     async def add(self, content: str, embedding: list[float]) -> None:
         """Add a knowledge vector entry"""
-        pass
 
 
 class MongoKnowledgeGroupRepository(AbstractKnowledgeGroupRepository):
@@ -62,13 +60,15 @@ class MongoKnowledgeGroupRepository(AbstractKnowledgeGroupRepository):
                 {"$set": entry_data},
                 upsert=True
             )
-        except DuplicateKeyError:
-            raise KnowledgeGroupAlreadyExists(f"Knowledge entry with group_id '{group.group_id}' already exists")
+        except DuplicateKeyError as err:
+            msg = f"Knowledge entry with group_id '{group.group_id}' already exists"
+            raise KnowledgeGroupAlreadyExistsError(msg) from None
 
         # Get the group document to get the ObjectId
         group_doc = await self.knowledge_groups.find_one({"groupId": group.group_id})
         if not group_doc:
-            raise RuntimeError(f"Failed to save knowledge group '{group.group_id}'")
+            msg = f"Failed to save knowledge group '{group.group_id}'"
+            raise RuntimeError(msg)
 
         # Remove existing sources for this group
         await self.knowledge_sources.delete_many({"groupId": group.group_id})
@@ -86,7 +86,7 @@ class MongoKnowledgeGroupRepository(AbstractKnowledgeGroupRepository):
                     "location": source.location
                 }
                 source_documents.append(source_data)
-            
+
             await self.knowledge_sources.insert_many(source_documents)
 
     async def get_by_id(self, group_id: str) -> KnowledgeGroup | None:
@@ -95,7 +95,7 @@ class MongoKnowledgeGroupRepository(AbstractKnowledgeGroupRepository):
         group_doc = await self.knowledge_groups.find_one({"groupId": group_id})
         if not group_doc:
             return None
-        
+
         # Create group instance
         group = KnowledgeGroup(
             group_id=group_doc["groupId"],
@@ -105,7 +105,7 @@ class MongoKnowledgeGroupRepository(AbstractKnowledgeGroupRepository):
             created_at=group_doc["createdAt"],
             updated_at=group_doc["updatedAt"]
         )
-        
+
         # Load and add all sources
         cursor = self.knowledge_sources.find({"groupId": group_id})
         async for source_doc in cursor:
@@ -115,7 +115,7 @@ class MongoKnowledgeGroupRepository(AbstractKnowledgeGroupRepository):
                 location=source_doc["location"]
             )
             group.add_source(source)
-        
+
         return group
 
     async def list_all(self) -> list[KnowledgeGroup]:
@@ -133,7 +133,7 @@ class MongoKnowledgeGroupRepository(AbstractKnowledgeGroupRepository):
                 created_at=group_doc["createdAt"],
                 updated_at=group_doc["updatedAt"]
             )
-            
+
             # Load and add all sources
             source_cursor = self.knowledge_sources.find({"groupId": group.group_id})
             async for source_doc in source_cursor:
@@ -143,7 +143,7 @@ class MongoKnowledgeGroupRepository(AbstractKnowledgeGroupRepository):
                     location=source_doc["location"]
                 )
                 group.add_source(source)
-            
+
             groups.append(group)
 
         return groups

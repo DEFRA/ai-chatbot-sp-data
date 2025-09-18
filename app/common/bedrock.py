@@ -1,5 +1,6 @@
-from abc import ABC, abstractmethod
 import json
+from abc import ABC, abstractmethod
+
 import boto3
 
 from app.config import config
@@ -9,7 +10,7 @@ bedrock_client: boto3.client = None
 
 def get_bedrock_client():
     global bedrock_client
-    
+
     if bedrock_client is None:
         bedrock_client = boto3.client(
             "bedrock-runtime",
@@ -31,9 +32,9 @@ class BedrockEmbeddingService(AbstractEmbeddingService):
         self.model_id = model_id
 
 
-    def generate_embeddings(self, input: str):
+    def generate_embeddings(self, input_text: str):
         request = {
-            "inputText": input
+            "inputText": input_text
         }
 
         response = self.client.invoke_model(
@@ -43,7 +44,7 @@ class BedrockEmbeddingService(AbstractEmbeddingService):
             body=json.dumps(request)
         )
 
-        response_body = json.loads(response['body'].read().decode('utf-8'))
+        response_body = json.loads(response["body"].read().decode("utf-8"))
 
-        return response_body['embedding']
+        return response_body["embedding"]
 

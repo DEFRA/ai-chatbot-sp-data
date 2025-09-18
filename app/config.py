@@ -1,6 +1,7 @@
-from typing import Optional
+
 from pydantic import Field, HttpUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
 
 class MsGraphConfig(BaseSettings):
     model_config = SettingsConfigDict()
@@ -16,9 +17,9 @@ class PostgresConfig(BaseSettings):
     port: int = Field(5432, alias="POSTGRES_PORT")
     database: str = Field(default="ai_chatbot_sp_data", alias="POSTGRES_DB")
     user: str = Field(default="ai_chatbot_sp_data", alias="POSTGRES_USER")
-    password: Optional[str] = Field(default=None, alias="POSTGRES_PASSWORD")
+    password: str | None = Field(default=None, alias="POSTGRES_PASSWORD")
     ssl_mode: str = Field(default="require", alias="POSTGRES_SSL_MODE")
-    rds_truststore: Optional[str] = Field(default=None, alias="TRUSTSTORE_RDS_ROOT_CA")
+    rds_truststore: str | None = Field(default=None, alias="TRUSTSTORE_RDS_ROOT_CA")
 
 
 class AppConfig(BaseSettings):
